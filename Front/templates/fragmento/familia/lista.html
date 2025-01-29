@@ -1,0 +1,139 @@
+{% extends "index.html" %}
+
+{% block content %}
+<div class="pagetitle text-center">
+    <h1>LISTADO DE FAMILIAS</h1>
+</div>
+
+<!-- Bloque para mostrar mensajes de flash -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+  <div class="alert alert-warning">
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }}">{{ message }}</div>
+    {% endfor %}
+  </div>
+{% endif %}
+{% endwith %}
+
+<!-- Incluir jQuery antes de tu script -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+
+        function actualizarUrlBusqueda() {
+            var baseUrl = 'http://localhost:5000/admin/familia/buscar/';
+            var texto = $("#texto").val();
+            var criterio = $("#criterio").val();
+            var busqueda = $("#busqueda").val();
+
+            if (busqueda === "binario" && criterio === "integrantes") {
+                criterio = "integrantesBinario";
+            }
+
+            var url = baseUrl + criterio + '/' + texto + '?metodo=' + $("#metodo").val();
+            $("#btn").attr("href", url);
+        }
+
+        $("#texto").keyup(actualizarUrlBusqueda); 
+        $("#criterio, #metodo").change(actualizarUrlBusqueda);
+
+        $(".orden-link").click(function(e) {
+            e.preventDefault(); 
+            var urlBase = 'http://localhost:5000/admin/familia/order/';
+            var campo = $(this).data('campo');
+            var orden = $(this).data('orden');
+            var metodo = $("#metodo").val(); 
+            var nuevaUrl = urlBase + campo + '/' + orden + '/' + metodo;
+            window.location.href = nuevaUrl; 
+        });
+    });
+</script>
+
+<section class="section">
+    <div class="col-lg-6" style="margin-left: 5%;">
+        <label>Criterio</label>
+        <select id="criterio">
+            <option value="apellidoPaterno">Apellido Paterno</option>
+            <option value="apellidoMaterno">Apellido Materno</option>
+            <option value="canton">Canton</option>
+            <option value="integrantes">Integrantes</option>
+        </select>
+        <input id="texto" placeholder="Ingresa un texto a buscar"/>
+        <a id="btn" class="btn btn-success">Buscar</a>
+    </div>
+
+    <div class="col-lg-6" style="margin-left: 5%;">
+        Busqueda
+        <select id="busqueda">
+            <option value="linealbinario">LinealBinaria</option>
+            <option value="binario">Binaria</option>
+        </select>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div style="text-align: right; width: 30%;">
+                    <br><br>
+                    <label>Metodo Ordenación</label>
+                    <select id="metodo">
+                        <option value="1">Método ShellSort</option>
+                        <option value="2">Método QuickSort</option>
+                        <option value="3">Método MergeSort</option>
+                    </select>
+                </div>                
+                <div class="card-body">
+                    <h5 class="card-title text-center">Encuestados</h5>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered text-center mx-auto" style="max-width: 1000px;">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        Cantón
+                                        <a href="#" class="orden-link" data-campo="canton" data-orden="1"><i class="bi bi-arrow-up"></i></a>
+                                        <a href="#" class="orden-link" data-campo="canton" data-orden="0"><i class="bi bi-arrow-down"></i></a>
+                                    </th>
+                                    <th>
+                                        Apellidos
+                                        <a href="#" class="orden-link" data-campo="apellidoPaterno" data-orden="1"><i class="bi bi-arrow-up"></i></a>
+                                        <a href="#" class="orden-link" data-campo="apellidoPaterno" data-orden="0"><i class="bi bi-arrow-down"></i></a>
+                                    </th>
+                                    <th>
+                                        Integrantes
+                                        <a href="#" class="orden-link" data-campo="integrantes" data-orden="1"><i class="bi bi-arrow-up"></i></a>
+                                        <a href="#" class="orden-link" data-campo="integrantes" data-orden="0"><i class="bi bi-arrow-down"></i></a>
+                                    </th>
+                                    <th>
+                                        ¿Tiene Generador?
+                                        <a href="#" class="orden-link" data-campo="tiene" data-orden="1"><i class="bi bi-arrow-up"></i></a>
+                                        <a href="#" class="orden-link" data-campo="tiene" data-orden="0"><i class="bi bi-arrow-down"></i></a>
+                                    </th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in lista_familia %}
+                                <tr>
+                                    <td>{{ item.canton }}</td>
+                                    <td>{{ item.apellidoPaterno }} {{ item.apellidoMaterno }}</td>
+                                    <td>{{ item.integrantes }}</td>
+                                    <td>{{ 'Sí' if item.tieneGenerador else 'No' }}</td>
+                                    <td>
+                                        <a href="/admin/familia/edit/{{ item.id }}" class="btn btn-info">MODIFICAR</a>
+                                        <form action="/admin/familia/delete/{{ item.id }}" method="post" style="display:inline;">
+                                          <button type="submit" class="btn btn-danger" onclick="return confirm('¿Estás seguro de que deseas eliminar esta familia?');">ELIMINAR</button>
+                                      </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
