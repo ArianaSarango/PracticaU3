@@ -1,0 +1,96 @@
+{% extends 'index.html' %}
+
+{% block content %}
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+<script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
+<!-- Quill.js CSS -->
+<link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
+
+<!-- Quill.js JavaScript -->
+<script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
+
+
+
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Telefono</th>
+                <th> latitud</th>
+                <th> longitud </th>
+                <th>direccion</th>
+                <th>horario</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if lista_hotel %}
+                {% for item in lista_hotel %}
+                <tr id="row-{{ item.idHotel }}">
+                    <td>{{ item.nombre }}</td>
+                    <td>{{ item.telefono }}</td>
+                    <td>{{ item.latitud }}</td>
+                    <td>{{ item.longitud }}</td>
+                    <td>{{ item.direccion }}</td>
+                    <td>{{ item.horario }}</td>
+                
+                    <td>
+                        <a href="/admin/sintetica/edit/{{ item.idHotel }}" class="btn btn-info">Modificar</a>
+                        <button class="btn btn-danger" onclick="deleteRow({{ item.idHotel }})">Eliminar</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="11">No hay proyectos registrados.</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+    function deleteRow(id) {
+        const row = document.getElementById(`row-${id}`);
+        if (confirm("¿Estás seguro de que deseas eliminar este sintetica?")) {
+            row.remove(); // Elimina la fila de la tabla
+        }
+    }
+</script>
+<script>
+    $(document).ready(function () {
+        function url_change() {
+            var texto = $("#texto").val(); // Obtener el texto de búsqueda
+            var categoria = $("#categoria").val(); // Obtener la categoría seleccionada
+
+            // Solo actualiza si hay texto
+            if (texto) {
+                // Construir la URL correctamente, con la categoría y el texto
+                var url = `/admin/sintetica/list/search/${categoria}/${texto}`;
+                $("#btn").attr("href", url); // Asignar la URL al botón de búsqueda
+            }
+        }
+
+        $("#texto").keyup(function () {
+            url_change(); // Llamar a la función cuando el usuario escribe en el input
+        });
+
+        // Corregido el ID del selector
+        $("#categoria").change(function () {
+            url_change(); // Llamar a la función cuando cambie la categoría
+        });
+
+        // Agregar manejo del click en el botón de búsqueda
+        $("#buscar").click(function (e) {
+            e.preventDefault();
+            var texto = $("#texto").val();
+            if (!texto) {
+                alert("Por favor ingrese un texto para buscar");
+                return;
+            }
+            // Redirigir a la URL construida
+            window.location.href = `/admin/sintetica/list/search/${$("#categoria").val()}/${texto}`;
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,180 @@
+{% extends "index.html" %}
+{% block content %}
+
+  <main class="main">
+
+    <!-- Page Title -->
+    <div class="page-title">
+      <div class="container d-lg-flex justify-content-between align-items-center">
+        <h1 class="mb-2 mb-lg-0">MODIFICAR</h1>
+        <nav class="breadcrumbs">
+          <ol>
+            <li><a href="index.html">Home</a></li>
+            <li class="current">Blog</li>
+          </ol>
+        </nav>
+      </div>
+    </div><!-- End Page Title -->
+    <section class="section">
+      <div class="container">
+          <div class="row justify-content-center">
+              <div class="col-lg-8">
+                  <div class="card">
+                      <div class="card-body">
+                          <h5 class="card-title text-center">Bienvenido</h5>
+                          <form class="row g-3 needs-validation" method="POST" action="/admin/familia/update" novalidate>
+                            
+                            <input type="hidden" name="id" value="{{hotel.id}}"> 
+                              <div class="col-md-6">
+                                  <label for="nombre" class="form-label">nombre</label>
+                                  <input type="text" class="form-control" id="nombre" name="nombre" required value= "{{hotel.nombre}}">
+                              </div>
+  
+                              <div class="col-md-6">
+                                  <label for="telefono" class="form-label"> Telefono</label>
+                                  <input type="text" class="form-control" id="telefono" name="telefono" required value= "{{hotel.telefono}}"readonly>
+                              </div>
+  
+                              <div class="col-md-6">
+                                  <label for="latitud" class="form-label">Latitud</label>
+                                  <input type="number" class="form-control" id="latitud" name="latitud" required value= "{{hotel.latitud}}"readonly>
+                              </div>
+
+                              <div class="col-md-6">
+                                <label for="longitud" class="form-label">Longitud</label>
+                                <input type="number" class="form-control" id="latitud" name="longitud" required value= "{{hotel.longitud}}"readonly>
+                            </div>
+
+                      
+                                  <div class="col-md-6">
+                                    <label for="direccion" class="form-label">Direccion</label>
+                                    <input type="text" class="form-control" id="direccion" name="direccion" required value= "{{hotel.direccion}}">
+                                    </div>
+
+                                    <div class="col-md-6">
+                                      <label for="horario" class="form-label">Horario</label>
+                                      <input type="text" class="form-control" id="horario" name="horario" required value= "{{hotel.horario}}">
+                                      </div>
+  
+
+                              <div class="col-12 text-center">
+                                  <button class="btn btn-success" type="submit">REGISTRAR</button>
+                                  <a href="/admin/familia/list" class="btn btn-danger">CANCELAR</a>
+                              </div>
+                          </form>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </section>
+  <!-- Script para Leaflet -->
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<script>
+  document.querySelectorAll('#star-rating .star').forEach(star => {
+      star.addEventListener('click', function() {
+          let value = this.getAttribute('data-value');
+          let select = document.querySelector('#star-rating select');
+          select.value = value;
+          document.querySelectorAll('#star-rating .star').forEach(innerStar => {
+              if (innerStar.getAttribute('data-value') <= value) {
+                  innerStar.classList.add('selected');
+              } else {
+                  innerStar.classList.remove('selected');
+              }
+          });
+      });
+  });
+</script>
+
+
+<script>
+  var map = L.map("map", {
+    center: [-1.8312, -78.1834], // Coordenadas de Ecuador
+    zoom: 6,
+    maxBounds: [[-5.0, -81.0], [2.5, -75.0]], // Limita el mapa a Ecuador
+    maxBoundsViscosity: 1.0, // Mantiene el mapa dentro del área definida
+    dragging: true,
+    zoomControl: true,
+    scrollWheelZoom: false, // Evita que se agrande con la rueda del mouse
+  });
+
+  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 18,
+    minZoom: 6,
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+  }).addTo(map);
+
+  var marker;
+  function onMapClick(e) {
+    if (marker) {
+      marker.setLatLng(e.latlng);
+    } else {
+      marker = L.marker(e.latlng).addTo(map);
+    }
+
+    var latitud = e.latlng.lat.toFixed(6);
+    var longitud = e.latlng.lng.toFixed(6);
+
+    document.getElementById('latitud').value = latitud;
+    document.getElementById('longitud').value = longitud;
+  }
+
+  map.on('click', onMapClick);
+</script>
+
+<style>
+  .pagetitle {
+    margin-bottom: 20px;
+  }
+
+  .text-black {
+    color: #000; /* Color negro para el encabezado y etiquetas */
+  }
+
+  .text-white {
+    color: #fff; /* Color blanco para otros textos */
+  }
+
+  .btn-custom {
+    font-size: 14px;
+    color: #fff;
+    border-radius: 5px;
+    padding: 8px 16px;
+    transition: background-color 0.3s ease;
+  }
+
+  .btn-custom.btn-light {
+    background-color: #f8f9fa; /* Color claro para el botón "Guardar" */
+    color: #000; /* Texto en negro */
+  }
+
+  .btn-custom.btn-secondary {
+    background-color: #6c757d; /* Color gris para el botón "Cancelar" */
+  }
+
+  .btn-custom.btn-light:hover {
+    background-color: #e2e6ea; /* Color de fondo al pasar el mouse */
+  }
+
+  .btn-custom.btn-secondary:hover {
+    background-color: #5a6268; /* Color de fondo al pasar el mouse */
+  }
+
+  .map-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+  }
+
+  #map {
+    width: 200%;
+    height: 300px; /* Tamaño pequeño del mapa */
+    max-width: 500px; /* Controla el ancho del mapa */
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+</style>
+  
+{% endblock %}

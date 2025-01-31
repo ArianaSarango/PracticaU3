@@ -1,4 +1,4 @@
-from flask import Blueprint, abort, request, render_template, redirect
+from flask import Blueprint, abort, request, render_template, redirect, url_for
 import json
 import requests
 from flask import flash
@@ -20,20 +20,14 @@ def admin():
 def view_register_hotel():
     r_hotel = requests.get("http://localhost:8086/api/hotel/list")
     data_hotel = r_hotel.json()
-    r_generador = requests.get("http://localhost:8086/api/generador/list")
-    data_generador = r_generador.json()
-
-    return render_template('fragmento/hotel/registro.html', lista_hotel=data_hotel["data"],lista_generador=data_generador["data"])
+    return render_template('fragmento/hotel/registro.html', lista_hotel=data_hotel["data"])
 
 @router.route('/admin/hotel/list')
-def list_person(msg=''):
+def list_hotel(msg=''):
     r_hotel = requests.get("http://localhost:8086/api/hotel/list")
     data_hotel = r_hotel.json()
-    r_generador = requests.get("http://localhost:8086/api/generador/list")
-    data_generador = r_generador.json()
     print(data_hotel)
-    
-    return render_template('fragmento/hotel/lista.html', lista_hotel=data_hotel["data"],lista_generador=data_generador["data"])
+    return render_template('fragmento/hotel/lista.html', lista_hotel=data_hotel["data"])
 
 @router.route('/admin/hotel/edit/<id>', methods=['GET'])
 def view_edit_person(id):
@@ -73,46 +67,29 @@ def view_edit_person(id):
 
 
 @router.route('/admin/hotel/save', methods=['POST'])
-def save_person():
+def save_hotel():
     headers = {'Content-Type': 'application/json'}
     form = request.form
 
     data_hotel = { 
-        "canton": form["can"],
-        "apellidoPaternoaterno": form["ape"],
-        "apellidoMaternoaterno": form["apem"],
-        "integrantes": form["inte"],
-        "tieneGenerador": form["tieneg"] == 'true' 
+        "nombre": form["nombre"],
+        "telefono": form["telefono"],
+        "latitud": float(form["latitud"]),
+        "longitud": float(form["longitud"]),
+        "direccion": form["direccion"],
+        "horario": form["horario"],
     }
 
-    if form["tieneg"] == 'true':  # Solo si tiene generador
-        data_generador = {
-            "costo": form["cost"],
-            "consumoXHora": form["conxh"],
-            "energiaGenerada": form["energen"],
-            "uso": form["uso"],
-        }
-    else:
-        data_generador = { # Inicializa el generador a valores predeterminados
-            "costo": 0,  
-            "consumoXHora": 0,  
-            "energiaGenerada": 0, 
-            "uso": 'ninguno', 
-        }
-
-    r_hotel = requests.post("http://localhost:8086/api/hotel/save", data=json.dumps(data_hotel), headers=headers)     # Hacer la petición para guardar la hotel
+    # Realizar la petición POST para guardar el hotel
+    r_hotel = requests.post("http://localhost:8086/api/hotel/save", data=json.dumps(data_hotel), headers=headers)
     
-    requests.post("http://localhost:8086/api/generador/save", data=json.dumps(data_generador), headers=headers)    # Hacer la petición para guardar el generador
-
-
     if r_hotel.status_code == 200:
-
         flash("Registro guardado correctamente", category='info')
-        return redirect('/admin/hotel/list')
+        # Renderizar la plantilla con los datos del hotel guardado
+        return redirect(url_for("router.list_hotel"))
     else:
-        flash(r_hotel.json().get("data", "Error al guardar la hotel"), category='error')
+        flash(r_hotel.json().get("data", "Error al guardar el hotel"), category='error')
         return redirect('/admin/hotel/list')
-
         
 @router.route('/admin/hotel/update', methods=['POST'])
 def update_person():
@@ -120,36 +97,20 @@ def update_person():
     form = request.form
 
     data_hotel = {
-        "id": form["id"],
-        "canton": form["can"],
-        "apellidoPaternoaterno": form["ape"],
-        "apellidoMaternoaterno": form["apem"],
-        "integrantes": form["inte"],
-        "tieneGenerador": form["tieneg"] == 'true'
+        "idHotel": form["idHotel"],
+        "nombre": form["nombre"],
+        "telefono": form["telefono"],
+        "latitud": float(form["latitud"]),
+            "longitud": float(form["longitud"]),
+        "direccion": form["direccion"],
+         "horario": form["horario"],
     }
 
-    if form["tieneg"] == 'true':  # Solo si tiene generador
-        data_generador = {
-            "id": form["id"],  # Usamos el mismo ID que la hotel
-            "costo": form["cost"],
-            "consumoXHora": form["conxh"],
-            "energiaGenerada": form["energen"],
-            "uso": form["uso"],
-        }
-    else:
 
-        data_generador = {  # Inicializa el generador a valores predeterminados
-            "id": form["id"],  
-            "costo": 0,  
-            "consumoXHora": 0,  
-            "energiaGenerada": 0,  
-            "uso": 'ninguno',  
-        }
 
-    r_generador = requests.post("http://localhost:8086/api/generador/update", data=json.dumps(data_generador), headers=headers)
-
-    if r_generador.status_code != 200:
-        flash("Error al actualizar el generador: " + r_generador.json().get("data", ""), category='error')
+   
+    if r_hotel.status_code != 200:
+        flash("Error al actualizar el generador: " + r_hotel.json().get("data", ""), category='error')
    
     r_hotel = requests.post("http://localhost:8086/api/hotel/update", data=json.dumps(data_hotel), headers=headers)
     

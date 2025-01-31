@@ -1,1 +1,13 @@
-[{"idHotel":1,"nombre":"Doraemon","telefono":"0989700718","latitud":"0.0","longitud":"0.0","direccion":"Calle Doraemon","horario":"00:00"}]
+[
+    {"idHotel":1,"nombre":"Hotel Sol","telefono":"0989700718","latitud":-1.831239,"longitud":-78.183406,"direccion":"Calle Sol 123","horario":"08:00-22:00"},
+    {"idHotel":2,"nombre":"Hotel Luna","telefono":"049490400","latitud":-2.123456,"longitud":-79.876543,"direccion":"Av. Central 456","horario":"07:00-23:00"},
+    {"idHotel":3,"nombre":"Hotel Estrella","telefono":"022334455","latitud":-0.789012,"longitud":-80.567890,"direccion":"Calle Estrella 789","horario":"24 horas"},
+    {"idHotel":4,"nombre":"Hotel Mar","telefono":"033221144","latitud":-3.210987,"longitud":-77.654321,"direccion":"Av. Costanera","horario":"06:00-20:00"},
+    {"idHotel":5,"nombre":"Hotel Montaña","telefono":"044556677","latitud":-4.345678,"longitud":-76.432109,"direccion":"Calle Alta","horario":"09:00-21:00"},
+    {"idHotel":6,"nombre":"Hotel Valle","telefono":"055667788","latitud":-5.567890,"longitud":-75.321098,"direccion":"Calle del Río","horario":"08:00-22:00"},
+    {"idHotel":7,"nombre":"Hotel Nube","telefono":"066778899","latitud":-6.678901,"longitud":-74.210987,"direccion":"Calle Cielo","horario":"07:00-23:00"},
+    {"idHotel":8,"nombre":"Hotel Bosque","telefono":"077889900","latitud":-7.789012,"longitud":-73.109876,"direccion":"Calle Verde","horario":"06:00-22:00"},
+    {"idHotel":9,"nombre":"Hotel Fuego","telefono":"088990011","latitud":-8.890123,"longitud":-72.987654,"direccion":"Calle Lava","horario":"24 horas"},
+    {"idHotel":10,"nombre":"Hotel Brisa","telefono":"099001122","latitud":-9.901234,"longitud":-71.876543,"direccion":"Av. Costera","horario":"08:00-20:00"}
+  ]
+  

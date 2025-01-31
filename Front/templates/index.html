@@ -20,11 +20,10 @@
     <link href="{{ url_for('static', filename='css/templatemo-barber-shop.css') }}" rel="stylesheet">
     <script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
 
+    <!-- Leaflet CSS for map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
     <!-- Template Information -->
-    <!--
-    TemplateMo 585 Barber Shop
-    https://templatemo.com/tm-585-barber-shop
-    -->
 </head>
 
 <body>
@@ -40,24 +39,24 @@
                     <a class="navbar-brand" href="index.html">
                         <img src="{{ url_for('static', filename='images/templatemo-aris-logo.png') }}" class="logo-image img-fluid" alt="Barber Shop Logo">
                     </a>
-                    <ul class="nav flex-column">                        
+                    <ul class="nav flex-column">
                         <li class="nav-item">
-                            <a class="nav-link click-scroll" href="/admin/familia/list">
-                              <i class="nav-item"></i> Ariana Sarango
+                            <a class="nav-link click-scroll" href="/admin/hotel/list">
+                                <i class="nav-item"></i> Ariana Sarango
                             </a>
-                          </li>
-                          <li class="nav-item">
-                            <a class="nav-link click-scroll" href="/admin/familia/list">Lista Familia</a>
-                          </li>
-                          <li class="nav-item">
-                            <a class="nav-link click-scroll" href="#section_3">Services</a>
-                          </li>
-                          <li class="nav-item">
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link click-scroll" href="/admin/hotel/list">Lista Familia</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link click-scroll" href="/admin/hotel/register">Services</a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link click-scroll" href="#section_4">Price List</a>
-                          </li>
-                          <li class="nav-item">
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link click-scroll" href="#section_5">Contact</a>
-                          </li>
+                        </li>
                     </ul>
                 </div>
             </nav>
@@ -83,7 +82,56 @@
                     </div>
                 </section>
 
-                
+                <!-- Map Section -->
+                <section id="map-section" style="height: 500px;">
+                    <div id="map" style="height: 100%;"></div>
+                </section>
+
+                <!-- Main JS File -->
+                <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+                <script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
+                <script>
+                    var map = L.map("map").setView([-1.2588246278651873, -78.62224102020265], 6);
+                    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+                        maxZoom: 19,
+                        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+                    }).addTo(map);
+
+                    var marker;
+
+                    function onMapClick(e) {
+                        if (marker) {
+                            marker.setLatLng(e.latlng);
+                        } else {
+                            marker = L.marker(e.latlng, {
+                                icon: L.icon({
+                                    iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+                                    iconSize: [25, 41],
+                                    iconAnchor: [12, 41],
+                                    popupAnchor: [1, -34],
+                                    shadowSize: [41, 41]
+                                })
+                            }).addTo(map);
+                        }
+                        marker.bindPopup(e.latlng.toString()).openPopup();
+
+                        // Actualizar campos de entrada
+                        document.querySelector('input[name="latitude"]').value = e.latlng.lat;
+                        document.querySelector('input[name="longitude"]').value = e.latlng.lng;
+                        fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${e.latlng.lat}&lon=${e.latlng.lng}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                let addressParts = [];
+                                if (data.address.road) addressParts.push(data.address.road);
+                                if (data.address.city || data.address.town || data.address.village) {
+                                    addressParts.push(data.address.city || data.address.town || data.address.village);
+                                }
+                                document.querySelector('input[name="address"]').value = addressParts.join(', ');
+                            })
+                            .catch(error => console.log('Error al obtener la dirección:', error));
+                    }
+                    map.on('click', onMapClick);
+                </script>
 
                 <!-- Main Content Block -->
                 <main class="container">
@@ -120,7 +168,6 @@
     <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/click-scroll.js') }}"></script>
     <script src="{{ url_for('static', filename='js/custom.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
 </body>
 
 </html>

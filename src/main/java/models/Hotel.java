@@ -4,8 +4,8 @@ public class Hotel {
     private int idHotel;
     private String nombre;
     private String telefono;
-    private String latitud;
-    private String longitud;
+    private Double latitud = 0.0;  // Corrected
+    private Double longitud = 0.0; // Corrected
     private String direccion;
     private String horario;
 
@@ -13,7 +13,7 @@ public class Hotel {
         return idHotel;
     }
 
-    public Hotel(int idHotel, String nombre, String telefono, String latitud, String longitud, String direccion) {
+    public Hotel(int idHotel, String nombre, String telefono, Double latitud, Double longitud, String direccion) {
         this.idHotel = idHotel;
         this.nombre = nombre;
         this.telefono = telefono;
@@ -43,15 +43,15 @@ public class Hotel {
         this.telefono = telefono;
     }
 
-    public String getLatitud() {
+    public Double getLatitud() {
         return latitud;
     }
 
-    public void setLatitud(String latitud) {
+    public void setLatitud(Double latitud) {
         this.latitud = latitud;
     }
 
-    public String getLongitud() {
+    public Double getLongitud() {
         return longitud;
     }
 
@@ -59,7 +59,7 @@ public class Hotel {
         return horario;
     }
 
-    public void setLongitud(String longitud) {
+    public void setLongitud(Double longitud) {
         this.longitud = longitud;
     }
 
@@ -81,14 +81,6 @@ public class Hotel {
 
     @Override
     public String toString() {
-        return "Hotel{" +
-                "idHotel=" + idHotel +
-                ", nombre='" + nombre + '\'' +
-                ", telefono='" + telefono + '\'' +
-                ", latitud='" + latitud + '\'' +
-                ", longitud='" + longitud + '\'' +
-                ", direccion='" + direccion + '\'' +
-                ", horario='" + horario + '\'' +
-                '}';
+        return nombre;
     }
 }

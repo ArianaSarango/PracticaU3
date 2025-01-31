@@ -74,8 +74,8 @@ public class HotelApi {
             HotelServices ps = new HotelServices();
             ps.getHotel().setNombre(map.get("nombre").toString());
             ps.getHotel().setTelefono(map.get("telefono").toString());
-            ps.getHotel().setLatitud(map.get("latitud").toString());
-            ps.getHotel().setLongitud(map.get("celular").toString());
+            ps.getHotel().setLatitud(Double.parseDouble(map.get("latitud").toString()));
+            ps.getHotel().setLongitud(Double.parseDouble(map.get("longitud").toString()));
             ps.getHotel().setHorario(map.get("horario").toString());
 
 
@@ -121,8 +121,8 @@ public class HotelApi {
             ps.setHotel(ps.get(Integer.parseInt(map.get("idHotel").toString())));
             ps.getHotel().setNombre(map.get("nombre").toString());
             ps.getHotel().setTelefono(map.get("telefono").toString());
-            ps.getHotel().setLatitud(map.get("latitud").toString());
-            ps.getHotel().setLongitud(map.get("longitud").toString());
+            ps.getHotel().setLatitud(Double.parseDouble(map.get("latitud").toString()));
+            ps.getHotel().setLongitud(Double.parseDouble(map.get("longitud").toString()));
             ps.getHotel().setHorario(map.get("horario").toString());
 
             ps.update();

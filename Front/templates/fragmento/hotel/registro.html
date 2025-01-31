@@ -1,0 +1,174 @@
+{% extends 'index.html' %}
+
+{% block content %}
+<div class="container">
+  <div class="pagetitle text-center">
+    <h1 class="text-black">Registro de Proyectos</h1>
+  </div>
+  
+  <section class="section">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title text-white">Ingresa los datos del Hotel</h5>
+
+            <form class="row g-3 needs-validation" method="POST" action="{{ url_for('router.save_hotel') }}" novalidate>
+
+              <div class="mb-3">
+                <label for="nombre" class="form-label text-black">Nombre</label>
+                <input type="text" class="form-control" name="nombre" required>
+              </div>
+              <div class="mb-3">
+                <label for="direccion" class="form-label text-black">Direccion</label>
+                <input type="text" class="form-control" name="direccion" required>
+              </div>
+              <div class="mb-3">
+                <label for="telefono" class="form-label text-black">Telefono</label>
+                <input type="text" class="form-control" name="telefono" required>
+              </div>
+              <div class="mb-3">
+                <label for="latitud" class="form-label text-black">Latitud</label>
+                <input type="number" class="form-control" name="latitud" step="0.0000001" id="latitud" required>
+              </div>
+              <div class="mb-3">
+                <label for="longitud" class="form-label text-black">Longitud</label>
+                <input type="number" class="form-control" name="longitud" step="0.0000001" id="longitud" required>
+              </div>
+              
+              <div class="mb-3">
+                <label for="horario" class="form-label text-black">Horario</label>
+                <input type="text" class="form-control" name="horario" required>
+              </div>
+   
+              <div class="mb-3">
+                <label for="direccion" class="form-label text-black">direccion</label>
+                <input type="text" class="form-control" name="direccion" required>
+              </div>
+              <!-- Contenedor del mapa -->
+              <div class="map-container">
+                <div id="map"></div>
+              </div>
+
+              <div class="d-flex justify-content-between mt-3">
+                <button type="submit" class="btn btn-custom btn-light">Guardar</button>
+                <a href="/admin/hotel/list" class="btn btn-custom btn-secondary">Cancelar</a>
+              </div>
+            </form>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- Script para Leaflet -->
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<script>
+  document.querySelectorAll('#star-rating .star').forEach(star => {
+      star.addEventListener('click', function() {
+          let value = this.getAttribute('data-value');
+          let select = document.querySelector('#star-rating select');
+          select.value = value;
+          document.querySelectorAll('#star-rating .star').forEach(innerStar => {
+              if (innerStar.getAttribute('data-value') <= value) {
+                  innerStar.classList.add('selected');
+              } else {
+                  innerStar.classList.remove('selected');
+              }
+          });
+      });
+  });
+</script>
+
+
+<script>
+  var map = L.map("map", {
+    center: [-1.8312, -78.1834], // Coordenadas de Ecuador
+    zoom: 6,
+    maxBounds: [[-5.0, -81.0], [2.5, -75.0]], // Limita el mapa a Ecuador
+    maxBoundsViscosity: 1.0, // Mantiene el mapa dentro del área definida
+    dragging: true,
+    zoomControl: true,
+    scrollWheelZoom: false, // Evita que se agrande con la rueda del mouse
+  });
+
+  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 18,
+    minZoom: 6,
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+  }).addTo(map);
+
+  var marker;
+  function onMapClick(e) {
+    if (marker) {
+      marker.setLatLng(e.latlng);
+    } else {
+      marker = L.marker(e.latlng).addTo(map);
+    }
+
+    var latitud = e.latlng.lat.toFixed(6);
+    var longitud = e.latlng.lng.toFixed(6);
+
+    document.getElementById('latitud').value = latitud;
+    document.getElementById('longitud').value = longitud;
+  }
+
+  map.on('click', onMapClick);
+</script>
+
+<style>
+  .pagetitle {
+    margin-bottom: 20px;
+  }
+
+  .text-black {
+    color: #000; /* Color negro para el encabezado y etiquetas */
+  }
+
+  .text-white {
+    color: #fff; /* Color blanco para otros textos */
+  }
+
+  .btn-custom {
+    font-size: 14px;
+    color: #fff;
+    border-radius: 5px;
+    padding: 8px 16px;
+    transition: background-color 0.3s ease;
+  }
+
+  .btn-custom.btn-light {
+    background-color: #f8f9fa; /* Color claro para el botón "Guardar" */
+    color: #000; /* Texto en negro */
+  }
+
+  .btn-custom.btn-secondary {
+    background-color: #6c757d; /* Color gris para el botón "Cancelar" */
+  }
+
+  .btn-custom.btn-light:hover {
+    background-color: #e2e6ea; /* Color de fondo al pasar el mouse */
+  }
+
+  .btn-custom.btn-secondary:hover {
+    background-color: #5a6268; /* Color de fondo al pasar el mouse */
+  }
+
+  .map-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+  }
+
+  #map {
+    width: 200%;
+    height: 300px; /* Tamaño pequeño del mapa */
+    max-width: 500px; /* Controla el ancho del mapa */
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+</style>
+{% endblock %}

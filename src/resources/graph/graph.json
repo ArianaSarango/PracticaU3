@@ -1,0 +1,40 @@
+{
+  "Hotel Fuego": [
+    "Hotel Bosque",
+    "Hotel Brisa"
+  ],
+  "Hotel Nube": [
+    "Hotel Valle",
+    "Hotel Bosque"
+  ],
+  "Hotel Valle": [
+    "Hotel Montaña",
+    "Hotel Nube"
+  ],
+  "Hotel Bosque": [
+    "Hotel Nube",
+    "Hotel Fuego"
+  ],
+  "Hotel Sol": [
+    "Hotel Luna"
+  ],
+  "Hotel Luna": [
+    "Hotel Sol",
+    "Hotel Estrella"
+  ],
+  "Hotel Estrella": [
+    "Hotel Luna",
+    "Hotel Mar"
+  ],
+  "Hotel Mar": [
+    "Hotel Estrella",
+    "Hotel Montaña"
+  ],
+  "Hotel Brisa": [
+    "Hotel Fuego"
+  ],
+  "Hotel Montaña": [
+    "Hotel Mar",
+    "Hotel Valle"
+  ]
+}

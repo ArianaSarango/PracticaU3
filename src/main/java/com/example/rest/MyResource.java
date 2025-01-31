@@ -1,60 +1,81 @@
 package com.example.rest;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.File;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;  // Import correcto para Response
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
-import controller.Dao.servicies.HotelServices;
 import controller.tda.list.LinkedList;
-
+import models.Hotel;
+import controller.Dao.servicies.HotelServices;
+import controller.tda.graph.GraphLabelNoDirect;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 @Path("myresource")
 public class MyResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getIt() {
-        // Map<String, Object> para mayor claridad
-        Map<String, Object> mapa = new HashMap<>();
-        HotelServices pd = new HotelServices(); 
-        String aux = "";
-        
-        try {
-            // Verifica si la lista de personas está vacía
-            aux = "La lista de personas está vacía: " + pd.listAll().isEmpty();
-            
-            // Genera una lista de números aleatorios
-            LinkedList<Double> listaA = new LinkedList<>();
-            for (int i = 0; i < 15; i++) {
-                double roundedNumber = Math.round((Math.random() * 100) * 100.0) / 100.0;
-                listaA.add(roundedNumber);
-            }
+    public Response getIt() {        
+        HashMap<String, Object> mapa = new HashMap<>();        
+        GraphLabelNoDirect<Hotel> graph = new GraphLabelNoDirect<>(5, Hotel.class);
+        Gson gson = new GsonBuilder().setPrettyPrinting().create(); // JSON formateado
+        HashMap<String, List<String>> adyacencias = new HashMap<>();
 
-            pd.getHotel().setNombre("Doraemon");
-            pd.getHotel().setDireccion("Calle Doraemon");
-            pd.getHotel().setTelefono("0989700718");
-            pd.getHotel().setLatitud("0.0");
-            pd.getHotel().setLongitud("0.0");
-            pd.getHotel().setHorario("00:00");
-       
-            pd.save();
-            
+        try {
+            HotelServices ps = new HotelServices();
+            LinkedList<Hotel> lp = ps.listAll();
+
+            if (!lp.isEmpty()) {
+                graph = new GraphLabelNoDirect<>(lp.getSize(), Hotel.class);
+                Hotel[] m = lp.toArray();
+
+                // Etiquetar los nodos
+                for (int i = 0; i < lp.getSize(); i++) {
+                    graph.labelsVerticeL(i + 1, m[i]);
+                    adyacencias.put(m[i].getNombre(), new ArrayList<>()); // Inicializar adyacencias
+                }
+
+                // Agregar conexiones (adyacencias)
+                for (int i = 0; i < lp.getSize(); i++) {
+                    if (i < lp.getSize() - 1) {
+                        graph.insertEdgeL(m[i], m[i + 1], 5.0f);
+                        adyacencias.get(m[i].getNombre()).add(m[i + 1].getNombre());
+                        adyacencias.get(m[i + 1].getNombre()).add(m[i].getNombre());
+                    }
+                }
+            }
+            // graph.drawGraph(); // Method undefined, so it is commented out
+            // Convertir la estructura a JSON
+            String jsonGraph = gson.toJson(adyacencias);
+
+            // Guardar en src/resources/graph/graph.json
+            File fileDir = new File("src" + File.separator + "resources" + File.separator + "graph");
+            if (!fileDir.exists()) fileDir.mkdirs(); // Crear directorio si no existe
+
+            FileWriter file = new FileWriter(fileDir + File.separator + "graph.json");
+            file.write(jsonGraph);
+            file.flush();
+            file.close();
+
+            mapa.put("msg", "OK");
+            mapa.put("data", jsonGraph);
+
         } catch (Exception e) {
-            System.out.println("Error al procesar: " + e.getMessage());
             mapa.put("msg", "Error");
-            mapa.put("error", e.getMessage());
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(mapa).build();
+            mapa.put("data", e.toString());
+            return Response.status(Status.BAD_REQUEST).entity(mapa).build();
         }
 
-        // Agrega la información al mapa de respuesta
-        mapa.put("msg", "Ok");
-        mapa.put("data", "Test: " + aux);
-        
-        // Construye y devuelve la respuesta correctamente
         return Response.ok(mapa).build();
     }
 }
